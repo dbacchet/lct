@@ -1,4 +1,5 @@
 use regex::Regex;
+use clap::{Arg, App};
 
 #[derive(Debug)]
 struct EntryTree {
@@ -65,8 +66,8 @@ impl EntryTree {
         update_coverage_recursive(self);
     }
 
-    fn print_tree(&self, max_depth: u32) {
-        fn print_recursive(node: &EntryTree, depth: u32, max_depth: u32) {
+    fn print_tree(&self, max_depth: i32) {
+        fn print_recursive(node: &EntryTree, depth: i32, max_depth: i32) {
             if max_depth>0 && depth>max_depth {
                 return
             }
@@ -91,10 +92,33 @@ impl EntryTree {
 }
 
 fn main() {
-    let args: Vec<String> = std::env::args().collect();
-    println!("{:?}", args);
+    let matches = App::new("My Test Program")
+        .version("0.1.0")
+        .author("Davide Bacchet <davide.bacchet@gmail.com>")
+        .about("Simple LCOV coverage file parser")
+        .arg(Arg::with_name("file")
+                 .short("f")
+                 .long("file")
+                 .takes_value(true)
+                 .help("name of the LCOV coverage file"))
+        .arg(Arg::with_name("print_levels")
+                 .short("l")
+                 .long("levels")
+                 .takes_value(false)
+                 .default_value("-1")
+                 .help("number of levels to print in the generated report"))
+        .get_matches();
+
+    let file_name = matches.value_of("file").unwrap();
+    println!("The file passed is: {}", file_name);
+
+    let print_levels = matches.value_of("print_levels").unwrap();
+    let print_levels = match print_levels.parse::<i32>() {
+                Ok(n) => n,
+                Err(_) => -1
+    };
+
     // read input file
-    let file_name = args[1].clone();
     let file_content = std::fs::read_to_string(file_name).unwrap();
 
     // extract per-file info using a regex, and add data to the EntryTree struct
@@ -106,14 +130,14 @@ fn main() {
                           LH:(.*?)\n    # extract number of lines covered
                           LF:(.*?)\n    # extract number of lines instrumented
                           end_of_record").unwrap();
-    let mut tree = EntryTree::new("");
+    let mut tree = EntryTree::new("commander");
     for cap in re.captures_iter(&file_content) {
         // println!("File: {} {} {}", &cap[1], &cap[2], &cap[3]);
         tree.get_or_create_with_path(&cap[1], cap[2].parse::<u32>().unwrap(), cap[3].parse::<u32>().unwrap());
     }
     tree.update_coverage_statistics();
     // show coverage info
-    tree.print_tree(20);
+    tree.print_tree(print_levels);
 
     // sample 
     // let mut tree2 = EntryTree::new("/");
