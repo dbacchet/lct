@@ -7,8 +7,11 @@ Usage
 -----
 
 ```
-lct path/to/lcov_coverage_report_file.dat
+lct --file path/to/lcov_coverage_report_file.dat --levels 3
 ```
+will parse the file and print a report with the first 3 levels in the file/folder hierarchy.
+
+Call `lct --help` for the full set of available options.
 
 Build
 -----

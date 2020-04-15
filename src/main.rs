@@ -92,7 +92,7 @@ impl EntryTree {
 }
 
 fn main() {
-    let matches = App::new("My Test Program")
+    let matches = App::new("LCov Tool")
         .version("0.1.0")
         .author("Davide Bacchet <davide.bacchet@gmail.com>")
         .about("Simple LCOV coverage file parser")

@@ -18,7 +18,7 @@ jobs:
     - name: Build
       run: |
         cargo build --release
-        tar -cvf lct_${{ steps.get_version.outputs.VERSION }}.tgz target/release/lct
+        tar -C target/release -cvf lct_${{ steps.get_version.outputs.VERSION }}.tgz lct
     - name: Run tests
       run: cargo test --release
     - name: Create Release
