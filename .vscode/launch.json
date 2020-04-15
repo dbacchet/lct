@@ -1,0 +1,45 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'lct'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=lct",
+                    "--package=lct"
+                ],
+                "filter": {
+                    "name": "lct",
+                    "kind": "bin"
+                }
+            },
+            "args": ["/home/davide/dev/commander/bazel-out/_coverage/_coverage_report.dat"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'lct'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=lct",
+                    "--package=lct"
+                ],
+                "filter": {
+                    "name": "lct",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
