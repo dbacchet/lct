@@ -11,15 +11,15 @@
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=lct",
+                    "--bin=lct-ui",
                     "--package=lct"
                 ],
                 "filter": {
-                    "name": "lct",
+                    "name": "lct-ui",
                     "kind": "bin"
                 }
             },
-            "args": ["/home/davide/dev/commander/bazel-out/_coverage/_coverage_report.dat"],
+            "args": ["-f", "/home/davide/dev/commander/bazel-out/_coverage/_coverage_report.dat"],
             "cwd": "${workspaceFolder}"
         },
         {

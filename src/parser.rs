@@ -2,11 +2,12 @@ use regex::Regex;
 
 #[derive(Debug)]
 pub struct EntryTree {
-    name: String,
-    lines_covered: u32,
-    lines_instrumented: u32,
-    expand: bool,
-    children: Vec<EntryTree>,
+    pub name: String,
+    pub lines_covered: u32,
+    pub lines_instrumented: u32,
+    pub expand: bool,
+    pub index_selected: usize,
+    pub children: Vec<EntryTree>,
 }
 
 impl EntryTree {
@@ -17,8 +18,28 @@ impl EntryTree {
             lines_covered: 0,
             lines_instrumented: 0,
             expand : true,
+            index_selected : 0,
             children : Vec::new(),
         }
+    }
+
+    pub fn get(&mut self, name: &str) -> Option<&mut EntryTree> {
+        if self.name == name {
+            return Some(self)
+        }
+        self.children.iter_mut().find(|x| { x.name == name })
+    }
+
+    pub fn get_with_path(&mut self, path: &str) -> Option<&mut EntryTree> {
+        let tokens = path.split("/");
+        let mut node = Some(self);
+        for t in tokens {
+            match node {
+                Some(n) => node = n.get(t),
+                None => return None,
+            }
+        }
+        node
     }
 
     // get or create an entry 
@@ -105,7 +126,7 @@ pub fn parse_coverage_file(file_name: &str) -> EntryTree {
                           LH:(.*?)\n    # extract number of lines covered
                           LF:(.*?)\n    # extract number of lines instrumented
                           end_of_record").unwrap();
-    let mut tree = EntryTree::new("commander");
+    let mut tree = EntryTree::new("_root_");
     for cap in re.captures_iter(&file_content) {
         // println!("File: {} {} {}", &cap[1], &cap[2], &cap[3]);
         tree.get_or_create_with_path(&cap[1], cap[2].parse::<u32>().unwrap(), cap[3].parse::<u32>().unwrap());
