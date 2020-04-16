@@ -1,8 +1,7 @@
 use regex::Regex;
-use clap::{Arg, App};
 
 #[derive(Debug)]
-struct EntryTree {
+pub struct EntryTree {
     name: String,
     lines_covered: u32,
     lines_instrumented: u32,
@@ -12,7 +11,7 @@ struct EntryTree {
 
 impl EntryTree {
     // create a tree
-    fn new(root_name: &str) -> EntryTree {
+    pub fn new(root_name: &str) -> EntryTree {
         EntryTree {
             name : String::from(root_name),
             lines_covered: 0,
@@ -23,7 +22,7 @@ impl EntryTree {
     }
 
     // get or create an entry 
-    fn get_or_create(&mut self, name: &str) -> &mut EntryTree {
+    pub fn get_or_create(&mut self, name: &str) -> &mut EntryTree {
         if self.name == name {
             return self
         }
@@ -35,7 +34,7 @@ impl EntryTree {
         }
     }
 
-    fn get_or_create_with_path(&mut self, path: &str, lines_covered: u32, lines_instrumented: u32) -> &mut EntryTree {
+    pub fn get_or_create_with_path(&mut self, path: &str, lines_covered: u32, lines_instrumented: u32) -> &mut EntryTree {
         let tokens = path.split("/");
         let mut node = self;
         for t in tokens {
@@ -46,7 +45,7 @@ impl EntryTree {
         node
     }
 
-    fn update_coverage_statistics(&mut self) {
+    pub fn update_coverage_statistics(&mut self) {
         fn update_coverage_recursive(node: &mut EntryTree) -> (u32, u32) {
             if node.children.len()==0 {
                 (node.lines_covered, node.lines_instrumented)
@@ -66,7 +65,7 @@ impl EntryTree {
         update_coverage_recursive(self);
     }
 
-    fn print_tree(&self, max_depth: i32) {
+    pub fn print_tree(&self, max_depth: i32) {
         fn print_recursive(node: &EntryTree, depth: i32, max_depth: i32) {
             if max_depth>0 && depth>max_depth {
                 return
@@ -91,33 +90,9 @@ impl EntryTree {
     }
 }
 
-fn main() {
-    let matches = App::new("LCov Tool")
-        .version("0.1.0")
-        .author("Davide Bacchet <davide.bacchet@gmail.com>")
-        .about("Simple LCOV coverage file parser")
-        .arg(Arg::with_name("file")
-                 .short("f")
-                 .long("file")
-                 .takes_value(true)
-                 .help("name of the LCOV coverage file"))
-        .arg(Arg::with_name("print_levels")
-                 .short("l")
-                 .long("levels")
-                 .takes_value(false)
-                 .default_value("-1")
-                 .help("number of levels to print in the generated report"))
-        .get_matches();
 
-    let file_name = matches.value_of("file").unwrap();
-    println!("The file passed is: {}", file_name);
-
-    let print_levels = matches.value_of("print_levels").unwrap();
-    let print_levels = match print_levels.parse::<i32>() {
-                Ok(n) => n,
-                Err(_) => -1
-    };
-
+/// parse a coverage file and generate a tree with coverage data per folder/file
+pub fn parse_coverage_file(file_name: &str) -> EntryTree {
     // read input file
     let file_content = std::fs::read_to_string(file_name).unwrap();
 
@@ -136,15 +111,5 @@ fn main() {
         tree.get_or_create_with_path(&cap[1], cap[2].parse::<u32>().unwrap(), cap[3].parse::<u32>().unwrap());
     }
     tree.update_coverage_statistics();
-    // show coverage info
-    tree.print_tree(print_levels);
-
-    // sample 
-    // let mut tree2 = EntryTree::new("/");
-    // tree2.get_or_create_with_path("simulation/interface/data_logging/data_logger.hpp", 10, 15);
-    // tree2.get_or_create_with_path("stream.hpp", 12,12);
-    // tree2.get_or_create_with_path("simulation/interface/types/simulation/named_colors.hpp", 13,14);
-    // tree2.update_coverage_statistics();
-    // tree2.print_tree(-1);
-
+    tree
 }

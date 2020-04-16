@@ -9,3 +9,6 @@ edition = "2018"
 [dependencies]
 regex = "1.3.6"
 clap = "2.33.0"
+tui = "0.9"
+termion = "1.5.5"
+
