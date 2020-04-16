@@ -3,7 +3,7 @@ use lct::parser;
 
 fn main() {
     let matches = App::new("LCov Tool")
-        .version("0.1.0")
+        .version("0.2.0")
         .author("Davide Bacchet <davide.bacchet@gmail.com>")
         .about("Simple LCOV coverage file parser")
         .arg(Arg::with_name("file")
