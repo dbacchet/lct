@@ -98,6 +98,14 @@ impl App {
     }
 }
 
+const USAGE_STR: &str = r"To navigate use the following keys:
+[k] or [up_arrow]    : previous file/folder in the current level (the center pane)
+[j] or [down_arrow]  : next file/folder in the current level
+[h] or [left_arrow]  : go to the parent folder
+[l] or [right_arrow] : enter in the currently selected folder
+[q]                  : quit.
+";
+
 
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -105,6 +113,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .version("0.2.0")
         .author("Davide Bacchet <davide.bacchet@gmail.com>")
         .about("Simple LCOV coverage file parser and interactive explorer")
+        .after_help(USAGE_STR)
         .arg(clap::Arg::with_name("file")
                  .short("f")
                  .long("file")
